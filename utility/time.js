@@ -17,9 +17,8 @@ const data = {
 const time = (date) => {
   let vaqt = date.split(" ");
   let vat = data[vaqt[3]] + "-" + vaqt[2] + "-" + vaqt[4];
-  console.log(vat);
+
   const time = new Date(vat).getTime();
-  console.log(time);
   return time;
 };
 module.exports = time;

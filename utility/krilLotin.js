@@ -55,7 +55,6 @@ function krilLotin(val) {
     }
   }
   let sprit = kril.join("");
-  console.log(sprit);
   return sprit;
 }
 module.exports = krilLotin;

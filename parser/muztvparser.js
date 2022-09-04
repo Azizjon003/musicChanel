@@ -15,13 +15,14 @@ const getAllMusicList = async (url) => {
       url = $(e).attr().href;
       musicList.push(url);
     });
+    let arr = [];
     for (let i = 0; i < 20; i++) {
       const data = await urlInfo(musicList[i]);
-      console.log(data);
+      arr.push(data);
     }
 
+    return arr;
     console.log(cli.green("success"));
-    // console.log(response.data);cl
   } catch (error) {
     console.log(cli.red(error));
   }
@@ -38,4 +39,5 @@ const urlInfo = async (url) => {
   let nameLotin = krilLotin(name);
   return { name, downUrl, date, nameLotin };
 };
-getAllMusicList("http://muztv.net/mp3/page/1/");
+
+module.exports = getAllMusicList;

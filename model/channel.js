@@ -13,6 +13,14 @@ const channel = (sequelize, DataTypes) => {
       type: DataTypes.BIGINT,
       allowNull: false,
     },
+    music_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "music",
+        key: "id",
+      },
+    },
   });
   return channel;
 };
