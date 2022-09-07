@@ -36,11 +36,7 @@ bot.on("channel_post", async (ctx) => {
 });
 bot.catch((err, ctx) => {
   console.log(err);
-  const id = msg.from.id;
-  ctx.telegram.sendMessage(
-    id,
-    "Botda xatolik aniqlandi /start buyrug'ini bosing"
-  );
+  console.log(ctx);
+  const id = ctx.update.channel_post.message_id;
 });
-
 bot.launch();
