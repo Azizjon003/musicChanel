@@ -30,14 +30,23 @@ const getAllMusicList = async (url) => {
 const urlInfo = async (url) => {
   // try {
   const response = await axios.get(url);
-  const $ = cheerio.load(response.data);
 
-  const downUrl = $(".fbtn.fx-row.fx-middle.fdl").attr().href;
+  const $ = cheerio.load(response.data);
+  let downUrl;
   const name = $(".fright.fx-1").children("h1").text().trim();
   let date = $(".finfo").children("li").last().text();
+  console.log(name);
+  if (name.includes("(HD Clip)")) {
+    console.log("ishlash");
+    downUrl = $(".fa.fa-music").parent().parent().attr().href;
+  } else {
+    downUrl = $(".fbtn.fx-row.fx-middle.fdl").attr().href;
+  }
+  console.log(downUrl);
+
   date = time(date);
   let nameLotin = krilLotin(name);
-  return { name, downUrl, date, nameLotin };
+  return { name, url, downUrl, date, nameLotin };
 };
 
 module.exports = getAllMusicList;
