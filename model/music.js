@@ -8,7 +8,6 @@ const music = (sequelize, DataTypes) => {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-      uniquie: true,
       validate: {
         min: 5,
         max: 20,
@@ -17,6 +16,7 @@ const music = (sequelize, DataTypes) => {
     url: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
       validate: {
         min: 5,
         max: 100,
@@ -41,6 +41,7 @@ const music = (sequelize, DataTypes) => {
     downUrl: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
     },
   });
   return music;
