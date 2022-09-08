@@ -15,7 +15,6 @@ const channel = (sequelize, DataTypes) => {
     },
     music_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
       references: {
         model: "music",
         key: "id",

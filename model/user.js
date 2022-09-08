@@ -9,14 +9,6 @@ const userTg = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    first_name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    lastName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     telegram_id: {
       type: DataTypes.BIGINT,
       allowNull: false,
