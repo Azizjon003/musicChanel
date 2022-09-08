@@ -42,7 +42,7 @@ bot.on("channel_post", async (ctx) => {
   }
 });
 bot.on("my_chat_member", async (ctx) => {
-  console.log(ctx);
+  console.log(ctx.update);
   const id = ctx.update.my_chat_member.chat.id;
 });
 bot.catch((err, ctx) => {
