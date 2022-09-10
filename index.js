@@ -44,7 +44,7 @@ bot.on("channel_post", async (ctx) => {
     await ctx.telegram.deleteMessage(id, postId);
     await ctx.telegram.sendMessage(id, "Biroz kuting iltimos");
     const musics = await getAllMusicList(
-      "https://xitmuzon.net/musics/uzbek/page/1/"
+      `https://xitmuzon.net/musics/uzbek/page/${1}/`
     );
     console.log(musics);
     for (let i = 0; i < musics.length; i++) {
@@ -60,8 +60,8 @@ bot.on("channel_post", async (ctx) => {
   }
 });
 bot.on("my_chat_member", async (ctx) => {
-  const id = ctx.update.my_chat_member.chat.id;
-  const test = ctx.update.my_chat_member.new_chat_member.status;
+  const id = ctx.update.my_chat_member.chat.id; //  chat idsi
+  const test = ctx.update.my_chat_member.new_chat_member.status; // test status
   console.log(ctx.update.my_chat_member.new_chat_member);
   const username = ctx.update.my_chat_member.chat.username;
   const userid = ctx.update.my_chat_member.from.id;

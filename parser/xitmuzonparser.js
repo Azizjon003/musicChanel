@@ -32,7 +32,6 @@ const urlInfo = async (url) => {
   let date = $(".finfo.fx-row").children("li").last().text();
   let dateA = date.split(" ");
   if (dateA[2].includes("Сегодня")) {
-    // console.log("bugun");
     date = new Date().getTime();
   } else {
     if (dateA[2].includes("Вчера")) {
@@ -40,7 +39,10 @@ const urlInfo = async (url) => {
       date = new Date().getTime() - 86400000;
     } else {
       //   console.log("bugun emas");
-      date = new Date(dateA[2].split(",")[0]).getTime();
+      let kun = dateA[2].split(".")[0].split("-")[0];
+      let oy = dateA[2].split(".")[0].split("-")[1];
+      let yil = dateA[2].split(".")[0].split("-")[2];
+      date = new Date(oy + "-" + kun + "-" + yil).getTime();
     }
   }
 
