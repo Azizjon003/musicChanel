@@ -36,8 +36,7 @@ bot.start(async (ctx) => {
   );
 });
 bot.on("channel_post", async (ctx) => {
-  console.log(ctx);
-
+  console.log(ctx.update);
   const text = ctx.update.channel_post.text;
   if (text == process.env.KEY_WORD) {
     const id = ctx.update.channel_post.chat.id;
@@ -62,8 +61,9 @@ bot.on("channel_post", async (ctx) => {
 });
 bot.on("my_chat_member", async (ctx) => {
   const id = ctx.update.my_chat_member.chat.id;
-  console.log(ctx.update);
-  const username = ctx.update.my_chat_member.username;
+  const test = ctx.update.my_chat_member.new_chat_member.status;
+  console.log(ctx.update.my_chat_member.new_chat_member);
+  const username = ctx.update.my_chat_member.chat.username;
   const userid = ctx.update.my_chat_member.from.id;
   let findUser = await User.findOne({ where: { telegram_id: userid } });
   if (!findUser) {
@@ -82,12 +82,16 @@ bot.on("my_chat_member", async (ctx) => {
       userId: findUser.id,
     });
   }
-  console.log(channel);
-  ctx.telegram.sendMessage(id, "Bot ushbu kanalga muvaffaqiyatli qo'shildi");
+  if (test == "administrator") {
+    ctx.telegram.sendMessage(
+      userid,
+      " Bot ushbu kanalga muvaffaqiyatli qo'shildi"
+    );
+  }
 });
-// bot.catch((err, ctx) => {
-//   console.log(err);
-//   console.log(ctx);
-// });
+bot.catch((err, ctx) => {
+  console.log(err);
+  console.log(ctx);
+});
 
 bot.launch();
