@@ -1,9 +1,10 @@
 const getAllMusicList = require("../parser/xitmuzonparser");
 const db = require("../model/index");
+const cli = require("cli-color");
 const music = db.music;
 async function updateData(model) {
   let data = await model.findAll({ order: [["date", "DESC"]] });
-  let test = data[0].date - 86400000 * 5;
+  let test = data[0].date - 86400000 * 100;
   console.log(test);
   console.log(data[0].name);
   let shart = true;
@@ -29,8 +30,10 @@ async function updateData(model) {
     }
     son++;
   }
-  console.log(mainArr);
-  console.log(mainArr.length);
+  for (let i = 0; i < mainArr.length; i++) {
+    let son = await model.create(mainArr[i]);
+    console.log(cli.blue(`${i + 1} eleamnt bazaga qo'shildi => ${son.name}`));
+  }
 }
 updateData(music);
 console.log(1654714800000 < 1661849304317);
