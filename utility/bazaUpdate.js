@@ -4,9 +4,10 @@ const cli = require("cli-color");
 const music = db.music;
 async function updateData(model) {
   let data = await model.findAll({ order: [["date", "DESC"]] });
-  let test = data[0].date - 86400000 * 100;
+  //   let test = data[0].date - 86400000 * 100;
+  let test = new Date().getTime() - 86400000 * 10;
   console.log(test);
-  console.log(data[0].name);
+  //   console.log(data[0].name);
   let shart = true;
   let son = 1;
   let mainArr = [];

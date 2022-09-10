@@ -1,4 +1,4 @@
-const { Sequelize, DataTypes } = require("sequelize");
+const { Sequelize, DataTypes, Op } = require("sequelize");
 const dotenv = require("dotenv");
 dotenv.config({ path: "config.env" });
 const cli = require("cli-color");
@@ -20,16 +20,17 @@ sequelize
     console.log(cli.red(err));
   });
 const db = {};
+db.Op = Op;
 db.sequelize = sequelize;
 db.music = require("./music")(sequelize, DataTypes);
 db.channel = require("./channel")(sequelize, DataTypes);
 db.user = require("./user")(sequelize, DataTypes);
-db.sequelize
-  .sync({ alter: true, force: true })
-  .then(() => {
-    console.log(cli.green("synced"));
-  })
-  .catch((err) => {
-    console.log(cli.red(err));
-  });
+// db.sequelize
+//   .sync({ alter: true, force: true })
+//   .then(() => {
+//     console.log(cli.green("synced"));
+//   })
+//   .catch((err) => {
+//     console.log(cli.red(err));
+//   });
 module.exports = db;

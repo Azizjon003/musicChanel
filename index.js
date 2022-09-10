@@ -40,22 +40,51 @@ bot.on("channel_post", async (ctx) => {
   const text = ctx.update.channel_post.text;
   if (text == process.env.KEY_WORD) {
     const id = ctx.update.channel_post.chat.id;
+    const channelId = await Channel.findOne({ where: { telegram_id: id } });
+
     const postId = ctx.update.channel_post.message_id;
     await ctx.telegram.deleteMessage(id, postId);
     await ctx.telegram.sendMessage(id, "Biroz kuting iltimos");
-    const musics = await getAllMusicList(
-      `https://xitmuzon.net/musics/uzbek/page/${1}/`
-    );
-    console.log(musics);
-    for (let i = 0; i < musics.length; i++) {
-      const music = await Music.create(musics[i]);
-      if (!music) {
-        console.log(cli.red("qo'shiqni bazaga qo'sha olmadim"));
+    if (!channelId.music_id) {
+      const yangiMusic = await Music.findAll({ order: [["date", "DESC"]] });
+      Channel.update(
+        { music_id: yangiMusic[0].id },
+        { where: { telegram_id: id } }
+      );
+      for (let i = 0; i < 10; i++) {
+        await ctx.telegram.sendAudio(id, yangiMusic[i].downUrl, {
+          title: yangiMusic.name,
+        });
       }
-    }
-    //await cst.telegram.sendMessage(id, "qo'shiqlarni bazaga qo'shdim");
-    for (let i = 0; i < musics.length; i++) {
-      await ctx.telegram.sendAudio(id, musics[i].downUrl);
+    } else {
+      const music = await Music.findOne({ where: { id: channelId.music_id } });
+      const music2 = await Music.findAll({
+        where: {
+          date: {
+            [db.Op.gte]: music.date,
+          },
+        },
+        order: [["date", "DESC"]],
+      });
+      console.log(music2[0].dataValues);
+      if (!music2) {
+        ctx.telegram.sendMessage(id, "Bazada yangi musiqalar yo'q");
+      }
+      let upt = await Channel.update(
+        {
+          music_id: music2[0].dataValues.id,
+        },
+        {
+          where: { telegram_id: id },
+        }
+      );
+      if (upt) {
+        for (let i = 0; i < music2.length; i++) {
+          await ctx.telegram.sendAudio(id, music2[i].dataValues.downUrl, {
+            title: music2.name,
+          });
+        }
+      }
     }
   }
 });
