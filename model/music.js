@@ -43,6 +43,10 @@ const music = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true,
     },
+    turi: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
   });
   return music;
 };

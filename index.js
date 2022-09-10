@@ -8,8 +8,11 @@ const Music = db.music;
 const User = db.user;
 const Channel = db.channel;
 //models
+
+var cron = require("node-cron");
+const updateBase = require("./utility/bazaUpdate");
+
 dotenv.config({ path: "config.env" });
-const getAllMusicList = require("./parser/xitmuzonparser");
 const TOKEN = process.env.TOKEN;
 const bot = new Telegraf(TOKEN);
 require("./model");
@@ -34,6 +37,9 @@ bot.start(async (ctx) => {
       parse_mode: "HTML",
     }
   );
+});
+cron.schedule("* * 3 * * *", async () => {
+  await updateBase(Music);
 });
 bot.on("channel_post", async (ctx) => {
   console.log(ctx.update);
