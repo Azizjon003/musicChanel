@@ -38,9 +38,70 @@ bot.start(async (ctx) => {
     }
   );
 });
-cron.schedule("* * 3 * * *", async () => {
+cron.schedule("1 * * * * *", async () => {
+  console.log(cli.red("running a task every minute"));
+  // await bot.telegram.sendMessage("@ubuntulinuxaau", "ishla qani");
+  // const id = ctx.update.channel_post.chat.id;
+  const channelId = await Channel.findAll();
+  // const channelId = await Channel.findOne({ where: { telegram_id: id } });
+  for (let i = 0; i < channelId.length; i++) {
+    if (!channelId[i].music_id) {
+      const yangiMusic = await Music.findAll({ order: [["date", "DESC"]] });
+      Channel.update(
+        { music_id: yangiMusic[0].id },
+        { where: { telegram_id: channelId[i].telegram_id } }
+      );
+      for (let j = 0; j < 10; j++) {
+        await bot.telegram.sendAudio(
+          channelId[i].telegram_id,
+          yangiMusic[j].downUrl,
+          {
+            title: yangiMusic[j].name,
+          }
+        );
+      }
+    } else {
+      const music = await Music.findOne({
+        where: { id: channelId[i].music_id },
+      });
+      const music2 = await Music.findAll({
+        where: {
+          date: {
+            [db.Op.gte]: music.date,
+          },
+        },
+        order: [["date", "DESC"]],
+      });
+      console.log(music2[0].dataValues);
+      if (!music2) {
+        bot.telegram.sendMessage(
+          channelId[i].telegram_id,
+          "Bazada yangi musiqalar yo'q"
+        );
+      }
+      let upt = await Channel.update(
+        {
+          music_id: music2[0].dataValues.id,
+        },
+        {
+          where: { telegram_id: channelId[i].telegram_id },
+        }
+      );
+      if (upt) {
+        for (let j = 0; j < music2.length; j++) {
+          await bot.telegram.sendAudio(id, music2[j].dataValues.downUrl, {
+            title: music2.name,
+          });
+        }
+      }
+    }
+  }
+});
+cron.schedule("* 3 * * * *", async () => {
+  console.log("1 min bo'ldi");
   await updateBase(Music);
 });
+
 bot.on("channel_post", async (ctx) => {
   console.log(ctx.update);
   const text = ctx.update.channel_post.text;
@@ -124,6 +185,7 @@ bot.on("my_chat_member", async (ctx) => {
     );
   }
 });
+
 bot.catch((err, ctx) => {
   console.log(err);
   console.log(ctx);
