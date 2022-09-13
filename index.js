@@ -43,8 +43,9 @@ cron.schedule("1 * * * * *", async () => {
   // await bot.telegram.sendMessage("@ubuntulinuxaau", "ishla qani");
   // const id = ctx.update.channel_post.chat.id;
   const channelId = await Channel.findAll();
+  console.log(channelId);
   // const channelId = await Channel.findOne({ where: { telegram_id: id } });
-  for (let i = 0; i < channelId.length; i++) {
+  for (let i = 0; i <= channelId.length; i++) {
     if (!channelId[i].music_id) {
       const yangiMusic = await Music.findAll({ order: [["date", "DESC"]] });
       Channel.update(
@@ -64,6 +65,7 @@ cron.schedule("1 * * * * *", async () => {
       const music = await Music.findOne({
         where: { id: channelId[i].music_id },
       });
+      console.log(cli.red("ishla", music));
       const music2 = await Music.findAll({
         where: {
           date: {
@@ -88,7 +90,7 @@ cron.schedule("1 * * * * *", async () => {
         }
       );
       if (upt) {
-        for (let j = 0; j < music2.length; j++) {
+        for (let j = 0; j <= music2.length; j++) {
           await bot.telegram.sendAudio(id, music2[j].dataValues.downUrl, {
             title: music2.name,
           });
