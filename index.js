@@ -3,6 +3,7 @@ const fs = require("fs");
 const cli = require("cli-color");
 const dotenv = require("dotenv");
 const db = require("./model/index");
+const cutter = require("./utility/musicCut");
 // models
 const Music = db.music;
 const User = db.user;
@@ -46,30 +47,30 @@ cron.schedule("1 * * * * *", async () => {
   console.log(channelId);
   // const channelId = await Channel.findOne({ where: { telegram_id: id } });
   for (let i = 0; i <= channelId.length; i++) {
-    if (!channelId[i].music_id) {
+    if (!channelId[i].dataValues.music_id) {
       const yangiMusic = await Music.findAll({ order: [["date", "DESC"]] });
       Channel.update(
         { music_id: yangiMusic[0].id },
-        { where: { telegram_id: channelId[i].telegram_id } }
+        { where: { telegram_id: channelId[i].dataValues.telegram_id } }
       );
       for (let j = 0; j < 10; j++) {
         await bot.telegram.sendAudio(
-          channelId[i].telegram_id,
-          yangiMusic[j].downUrl,
+          channelId[i].dataValues.telegram_id,
+          yangiMusic[j].dataValues.downUrl,
           {
-            title: yangiMusic[j].name,
+            title: yangiMusic[j].dataValues.name,
           }
         );
       }
     } else {
       const music = await Music.findOne({
-        where: { id: channelId[i].music_id },
+        where: { id: channelId[i].dataValues.music_id },
       });
       console.log(cli.red("ishla", music));
       const music2 = await Music.findAll({
         where: {
           date: {
-            [db.Op.gte]: music.date,
+            [db.Op.gt]: music.date,
           },
         },
         order: [["date", "DESC"]],
@@ -86,13 +87,21 @@ cron.schedule("1 * * * * *", async () => {
           music_id: music2[0].dataValues.id,
         },
         {
-          where: { telegram_id: channelId[i].telegram_id },
+          where: { telegram_id: channelId[i].dataValues.telegram_id },
         }
       );
       if (upt) {
         for (let j = 0; j <= music2.length; j++) {
-          await bot.telegram.sendAudio(id, music2[j].dataValues.downUrl, {
-            title: music2.name,
+          await cutter(
+            bot,
+            channelId[i].dataValues.telegram_id,
+            music2[i].dataValues.name,
+            music2[i].dataValues.downUrl,
+            channelId[i].dataValues.name
+          );
+          await ctx.telegram.sendAudio(id, music2[i].dataValues.downUrl, {
+            caption: `#${music2[i].dataValues.turi}\n${music2[i].dataValues.name}\n<a href = 't.me/${channelId.name}'>Bizning kanal obuna bo'lib qo'ying</a>\n To'liq musiqa pastda`,
+            parse_mode: "HTML",
           });
         }
       }
@@ -113,7 +122,7 @@ bot.on("channel_post", async (ctx) => {
 
     const postId = ctx.update.channel_post.message_id;
     await ctx.telegram.deleteMessage(id, postId);
-    await ctx.telegram.sendMessage(id, "Biroz kuting iltimos");
+    // await ctx.telegram.sendMessage(id, "Biroz kuting iltimos");
     if (!channelId.music_id) {
       const yangiMusic = await Music.findAll({ order: [["date", "DESC"]] });
       Channel.update(
@@ -130,7 +139,7 @@ bot.on("channel_post", async (ctx) => {
       const music2 = await Music.findAll({
         where: {
           date: {
-            [db.Op.gte]: music.date,
+            [db.Op.gt]: music.date,
           },
         },
         order: [["date", "DESC"]],
@@ -149,8 +158,16 @@ bot.on("channel_post", async (ctx) => {
       );
       if (upt) {
         for (let i = 0; i < music2.length; i++) {
+          await cutter(
+            ctx,
+            id,
+            music2[i].dataValues.name,
+            music2[i].dataValues.downUrl,
+            channelId.name
+          );
           await ctx.telegram.sendAudio(id, music2[i].dataValues.downUrl, {
-            title: music2.name,
+            caption: `#${music2[i].dataValues.turi}\n${music2[i].dataValues.name}\n<a href = 't.me/${channelId.name}'>Bizning kanal obuna bo'lib qo'ying</a>\n To'liq musiqa pastda`,
+            parse_mode: "HTML",
           });
         }
       }
