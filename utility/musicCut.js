@@ -1,6 +1,7 @@
 const mp3Cutter = require("mp3-cutter");
 const axios = require("axios");
 const fs = require("fs");
+const path = require("path");
 async function cutter(ctx, id, name, link, username) {
   const data = await axios.get(link, {
     responseType: "stream",
@@ -17,9 +18,7 @@ async function cutter(ctx, id, name, link, username) {
     end: 50,
   });
 
-  await axios.get(link, {
-    responseType: "stream",
-  });
+  const url = path.join(__dirname + "/cut/" + name + ".mp3");
   const data2 = await fs.readFileSync(__dirname + "/cut/" + name + ".mp3");
   await ctx.telegram.sendVoice(
     id,

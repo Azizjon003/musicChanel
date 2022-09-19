@@ -1,3 +1,4 @@
+require("console-stamp")(console);
 const { Telegraf } = require("telegraf");
 const fs = require("fs");
 const cli = require("cli-color");
@@ -39,30 +40,31 @@ bot.start(async (ctx) => {
     }
   );
 });
-cron.schedule("1 * * * * *", async () => {
+cron.schedule("0 10 * * * *", async () => {
   console.log(cli.red("running a task every minute"));
   // await bot.telegram.sendMessage("@ubuntulinuxaau", "ishla qani");
   // const id = ctx.update.channel_post.chat.id;
   const channelId = await Channel.findAll();
   console.log(channelId);
   // const channelId = await Channel.findOne({ where: { telegram_id: id } });
-  for (let i = 0; i <= channelId.length; i++) {
+  for (let i = 0; i < channelId.length; i++) {
     if (!channelId[i].dataValues.music_id) {
       const yangiMusic = await Music.findAll({ order: [["date", "DESC"]] });
       Channel.update(
         { music_id: yangiMusic[0].id },
         { where: { telegram_id: channelId[i].dataValues.telegram_id } }
       );
-      for (let j = 0; j < 10; j++) {
+      for (let k = 0; k < 10; k++) {
         await bot.telegram.sendAudio(
           channelId[i].dataValues.telegram_id,
-          yangiMusic[j].dataValues.downUrl,
+          yangiMusic[k].dataValues.downUrl,
           {
-            title: yangiMusic[j].dataValues.name,
+            title: yangiMusic[k].dataValues.name,
           }
         );
       }
     } else {
+      console.log(cli.green("else ga ishlagani kirdi"));
       const music = await Music.findOne({
         where: { id: channelId[i].dataValues.music_id },
       });
@@ -70,7 +72,7 @@ cron.schedule("1 * * * * *", async () => {
       const music2 = await Music.findAll({
         where: {
           date: {
-            [db.Op.gt]: music.date,
+            [db.Op.gt]: music.dataValues.date,
           },
         },
         order: [["date", "DESC"]],
@@ -90,25 +92,28 @@ cron.schedule("1 * * * * *", async () => {
           where: { telegram_id: channelId[i].dataValues.telegram_id },
         }
       );
-      if (upt) {
-        for (let j = 0; j <= music2.length; j++) {
-          await cutter(
-            bot,
-            channelId[i].dataValues.telegram_id,
-            music2[i].dataValues.name,
-            music2[i].dataValues.downUrl,
-            channelId[i].dataValues.name
-          );
-          await ctx.telegram.sendAudio(id, music2[i].dataValues.downUrl, {
-            caption: `#${music2[i].dataValues.turi}\n${music2[i].dataValues.name}\n<a href = 't.me/${channelId.name}'>Bizning kanal obuna bo'lib qo'ying</a>\n To'liq musiqa pastda`,
+      for (let j = 0; j < music2.length; j++) {
+        await cutter(
+          bot,
+          channelId[i].dataValues.telegram_id,
+          music2[j].dataValues.name,
+          music2[j].dataValues.downUrl,
+          channelId[i].dataValues.name
+        );
+        console.log(cli.blue("idhladi j bilan"));
+        await bot.telegram.sendAudio(
+          channelId[i].dataValues.telegram_id,
+          music2[j].dataValues.downUrl,
+          {
+            caption: `#${music2[j].dataValues.turi}\n${music2[j].dataValues.name}\n<a href = 't.me/${channelId[i].name}'>Bizning kanal obuna bo'lib qo'ying</a>`,
             parse_mode: "HTML",
-          });
-        }
+          }
+        );
       }
     }
   }
 });
-cron.schedule("* 3 * * * *", async () => {
+cron.schedule("0 30 * * * *", async () => {
   console.log("1 min bo'ldi");
   await updateBase(Music);
 });
@@ -139,7 +144,7 @@ bot.on("channel_post", async (ctx) => {
       const music2 = await Music.findAll({
         where: {
           date: {
-            [db.Op.gt]: music.date,
+            [db.Op.gte]: music.date,
           },
         },
         order: [["date", "DESC"]],
@@ -166,7 +171,7 @@ bot.on("channel_post", async (ctx) => {
             channelId.name
           );
           await ctx.telegram.sendAudio(id, music2[i].dataValues.downUrl, {
-            caption: `#${music2[i].dataValues.turi}\n${music2[i].dataValues.name}\n<a href = 't.me/${channelId.name}'>Bizning kanal obuna bo'lib qo'ying</a>\n To'liq musiqa pastda`,
+            caption: `#${music2[i].dataValues.turi}\n${music2[i].dataValues.name}\n<a href = 't.me/${channelId.name}'>Bizning kanal obuna bo'lib qo'ying</a>\n`,
             parse_mode: "HTML",
           });
         }
